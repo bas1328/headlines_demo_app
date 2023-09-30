@@ -1,21 +1,26 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
+import { GetStaticPropsContext } from "next";
 
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
 
-import { AVAILIBLE_COUNTRIES, PAGE_SIZE } from "@/common/constants";
-import { Article } from "@/types/common";
+import { CATEGORIES, PAGE_SIZE } from "@/common/constants";
+import { Article, CategoriesUnion } from "@/types/common";
 
-import styles from "@/styles/Home.module.scss";
+import styles from "./Category.module.scss";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const { data } = useQuery<Article[]>(["all_headlines"], () =>
+  const { categoryName } = useRouter().query;
+
+  const { data } = useQuery<Article[]>(["headlines_by_category"], () =>
     getHeadlines({
-      country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+      // safe type casting because we reroute to 404 if category is not in CATEGORIES
+      category: categoryName as CategoriesUnion,
       pageSize: PAGE_SIZE,
     })
   );
@@ -50,11 +55,23 @@ export default function Home() {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ params }: GetStaticPropsContext) {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["all_headlines"], () =>
-    getHeadlines({ country: AVAILIBLE_COUNTRIES.UNITED_STATES, pageSize: PAGE_SIZE })
+  const category = params?.categoryName;
+
+  if (!CATEGORIES.includes(category as string)) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
+
+  await queryClient.prefetchQuery(["headlines_by_category"], () =>
+    // type casting is safe because we check if category is in CATEGORIES
+    getHeadlines({ category: category as CategoriesUnion, pageSize: PAGE_SIZE })
   );
 
   return {

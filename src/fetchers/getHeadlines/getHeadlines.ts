@@ -1,5 +1,6 @@
 import { TOP_HEADLINES_URL } from "@/common/common";
-import { Categories, CountryCodesUnion } from "@/types/common";
+import { PAGE_SIZE } from "@/common/constants";
+import { CountryCodesUnion, CategoriesUnion, Article } from "@/types/common";
 
 /** This sets a conditional restriction for not using country or category with sources*/
 type GetPostsArgs =
@@ -7,7 +8,7 @@ type GetPostsArgs =
       country?: CountryCodesUnion;
       sources?: never;
       pageSize?: number;
-      category?: Categories;
+      category?: CategoriesUnion;
       q?: string;
       page?: number;
     }
@@ -22,7 +23,7 @@ type GetPostsArgs =
 
 export const getHeadlines = async ({
   country,
-  pageSize = 10,
+  pageSize = PAGE_SIZE,
   category,
   q,
   page,
@@ -42,8 +43,8 @@ export const getHeadlines = async ({
       "X-Api-Key": process.env.NEXT_PUBLIC_NEWS_API_TOKEN,
     },
   });
-
-  const { articles } = await posts.json();
+  // type cast to Article[] because we know that's what we're getting back
+  const { articles } = (await posts.json()) as { articles: Article[] };
 
   return articles;
 };

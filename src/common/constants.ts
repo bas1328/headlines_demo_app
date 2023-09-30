@@ -2,6 +2,16 @@ export const EVERY_COUNTRY_ENDPOINT = "/v2/countries";
 export const TOP_HEADLINES_ENDPOINT = "/v2/top-headlines";
 export const PAGE_SIZE = 20;
 
+export const CATEGORIES = [
+  "business",
+  "entertainment",
+  "general",
+  "health",
+  "science",
+  "sports",
+  "technology",
+] as const;
+
 export const AVAILIBLE_COUNTRIES = {
   UNITED_ARAB_EMIRATES: "ae",
   ARGENTINA: "ar",
