@@ -1,6 +1,6 @@
 export const EVERY_COUNTRY_ENDPOINT = "/v2/countries";
 export const TOP_HEADLINES_ENDPOINT = "/v2/top-headlines";
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 10;
 
 export const CATEGORIES = [
   "business",

@@ -38,13 +38,19 @@ export const getHeadlines = async ({
   if (page) url.searchParams.append("page", page.toString());
   if (sources) url.searchParams.append("sources", sources);
 
-  const posts = await fetch(url, {
-    headers: {
-      "X-Api-Key": process.env.NEXT_PUBLIC_NEWS_API_TOKEN,
-    },
-  });
-  // type cast to Article[] because we know that's what we're getting back
-  const { articles } = (await posts.json()) as { articles: Article[] };
+  try {
+    const posts = await fetch(url, {
+      headers: {
+        "X-Api-Key": process.env.NEXT_PUBLIC_NEWS_API_TOKEN,
+      },
+    });
+    const response = await posts.json();
 
-  return articles;
+    return response;
+    
+  } catch (error) {
+    // TODO: show error message to user
+    console.error(error);
+    return [];
+  }
 };

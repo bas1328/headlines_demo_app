@@ -3,27 +3,67 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import { GetStaticPropsContext } from "next";
 
+import { useMemo } from "react";
+
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
 
-import { CATEGORIES, PAGE_SIZE } from "@/common/constants";
-import { Article, CategoriesUnion } from "@/types/common";
+import { AVAILIBLE_COUNTRIES, CATEGORIES, PAGE_SIZE } from "@/common/constants";
+import { CategoriesUnion, GetHeadlinesResponseType } from "@/types/common";
 
 import styles from "./Category.module.scss";
 import { useRouter } from "next/router";
+import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
+import { usePagination } from "@/hooks/usePagination";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const { categoryName } = useRouter().query;
 
-  const { data } = useQuery<Article[]>(["headlines_by_category"], () =>
-    getHeadlines({
-      // safe type casting because we reroute to 404 if category is not in CATEGORIES
-      category: categoryName as CategoriesUnion,
-      pageSize: PAGE_SIZE,
-    })
+  const {
+    page,
+    hasNext,
+    setHasNext,
+    hasPrev,
+    setHasPrev,
+    handleNext,
+    handlePrev,
+  } = usePagination();
+
+  const { data, isLoading } = useQuery<GetHeadlinesResponseType>(
+    ["headlines_by_category", page],
+    () =>
+      getHeadlines({
+        // safe type casting because we reroute to 404 if category is not in CATEGORIES
+        category: categoryName as CategoriesUnion,
+        pageSize: PAGE_SIZE,
+        page,
+        country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+      }),
+    {
+      onSuccess: (data) => {
+        if (data?.totalResults) {
+          setHasNext(data?.totalResults > page * PAGE_SIZE);
+          setHasPrev(page > 1);
+        }
+      },
+    }
   );
+
+  // cleaning up the news api response.
+  const articles = useMemo(() => {
+    return data?.articles.filter((el) => {
+      const filterConditions = [
+        el.title === "[Removed]",
+        el.content === "[Removed]",
+        el.description === "[Removed]",
+        el.urlToImage?.includes("www.si.com"),
+      ];
+
+      return !filterConditions.includes(true);
+    });
+  }, [data]);
 
   return (
     <>
@@ -34,7 +74,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        {data?.map((article) => (
+        {articles?.map((article) => (
           <div key={article.source?.id || article?.publishedAt || article?.url}>
             <h1>{article?.title}</h1>
             <p>{article?.description}</p>
@@ -44,12 +84,17 @@ export default function Home() {
                   src={article?.urlToImage}
                   alt={article?.title || "Article Image"}
                   fill
-                  objectFit="contain"
                 />
               </div>
             )}
           </div>
         ))}
+        <PaginationButton disabled={!hasPrev} onClick={handlePrev}>
+          Prev
+        </PaginationButton>
+        <PaginationButton disabled={!hasNext} onClick={handleNext}>
+          Next
+        </PaginationButton>
       </main>
     </>
   );
@@ -60,7 +105,8 @@ export async function getServerSideProps({ params }: GetStaticPropsContext) {
 
   const category = params?.categoryName;
 
-  if (!CATEGORIES.includes(category as string)) {
+  // workaround for typescript's issue with Array.includes
+  if (!CATEGORIES.includes(category as CategoriesUnion)) {
     return {
       redirect: {
         destination: "/404",
@@ -71,7 +117,11 @@ export async function getServerSideProps({ params }: GetStaticPropsContext) {
 
   await queryClient.prefetchQuery(["headlines_by_category"], () =>
     // type casting is safe because we check if category is in CATEGORIES
-    getHeadlines({ category: category as CategoriesUnion, pageSize: PAGE_SIZE })
+    getHeadlines({
+      category: category as CategoriesUnion,
+      pageSize: PAGE_SIZE,
+      country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+    })
   );
 
   return {

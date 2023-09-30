@@ -6,19 +6,45 @@ import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
 
 import { AVAILIBLE_COUNTRIES, PAGE_SIZE } from "@/common/constants";
-import { Article } from "@/types/common";
+import { GetHeadlinesResponseType } from "@/types/common";
 
 import styles from "@/styles/Home.module.scss";
+import { usePagination } from "@/hooks/usePagination";
+import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const { data } = useQuery<Article[]>(["all_headlines"], () =>
-    getHeadlines({
-      country: AVAILIBLE_COUNTRIES.UNITED_STATES,
-      pageSize: PAGE_SIZE,
-    })
+  const {
+    page,
+    setPage,
+    hasNext,
+    setHasNext,
+    hasPrev,
+    setHasPrev,
+    handlePrev,
+    handleNext,
+  } = usePagination();
+
+  const { data } = useQuery<GetHeadlinesResponseType>(
+    ["all_headlines", page],
+    () =>
+      getHeadlines({
+        country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+        pageSize: PAGE_SIZE,
+        page,
+      }),
+    {
+      onSuccess: (data: { totalResults: number }) => {
+        if (data?.totalResults) {
+          setHasNext(data?.totalResults > page * PAGE_SIZE);
+          setHasPrev(page > 1);
+        }
+      },
+    }
   );
+
+  const articles = data?.articles;
 
   return (
     <>
@@ -29,7 +55,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
-        {data?.map((article) => (
+        {articles?.map((article) => (
           <div key={article.source?.id || article?.publishedAt || article?.url}>
             <h1>{article?.title}</h1>
             <p>{article?.description}</p>
@@ -39,12 +65,17 @@ export default function Home() {
                   src={article?.urlToImage}
                   alt={article?.title || "Article Image"}
                   fill
-                  objectFit="contain"
                 />
               </div>
             )}
           </div>
         ))}
+        <PaginationButton disabled={!hasPrev} onClick={handlePrev}>
+          Prev
+        </PaginationButton>
+        <PaginationButton disabled={!hasNext} onClick={handleNext}>
+          Next
+        </PaginationButton>
       </main>
     </>
   );
@@ -54,7 +85,10 @@ export async function getServerSideProps() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(["all_headlines"], () =>
-    getHeadlines({ country: AVAILIBLE_COUNTRIES.UNITED_STATES, pageSize: PAGE_SIZE })
+    getHeadlines({
+      country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+      pageSize: PAGE_SIZE,
+    })
   );
 
   return {

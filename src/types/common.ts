@@ -21,3 +21,9 @@ export type Article = {
   content?: string;
   publishedDate?: Date;
 };
+
+export type GetHeadlinesResponseType = {
+  status: string;
+  totalResults: number;
+  articles: Article[];
+};
