@@ -1,23 +1,25 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
+import { useMemo } from "react";
 
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
+
+import { usePagination } from "@/hooks/usePagination";
+import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
+import { sanitiseResponse } from "@/utils/sanitiseResponse";
 
 import { AVAILIBLE_COUNTRIES, PAGE_SIZE } from "@/common/constants";
 import { GetHeadlinesResponseType } from "@/types/common";
 
 import styles from "@/styles/Home.module.scss";
-import { usePagination } from "@/hooks/usePagination";
-import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const {
     page,
-    setPage,
     hasNext,
     setHasNext,
     hasPrev,
@@ -44,7 +46,9 @@ export default function Home() {
     }
   );
 
-  const articles = data?.articles;
+  const articles = useMemo(() => {
+    return sanitiseResponse(data?.articles);
+  }, [data]);
 
   return (
     <>

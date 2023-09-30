@@ -2,19 +2,19 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { GetStaticPropsContext } from "next";
-
+import { useRouter } from "next/router";
 import { useMemo } from "react";
-
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
-import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
 
+import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
+import { usePagination } from "@/hooks/usePagination";
+
+import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
+import { sanitiseResponse } from "@/utils/sanitiseResponse";
 import { AVAILIBLE_COUNTRIES, CATEGORIES, PAGE_SIZE } from "@/common/constants";
 import { CategoriesUnion, GetHeadlinesResponseType } from "@/types/common";
 
 import styles from "./Category.module.scss";
-import { useRouter } from "next/router";
-import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
-import { usePagination } from "@/hooks/usePagination";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +31,7 @@ export default function Home() {
     handlePrev,
   } = usePagination();
 
-  const { data, isLoading } = useQuery<GetHeadlinesResponseType>(
+  const { data } = useQuery<GetHeadlinesResponseType>(
     ["headlines_by_category", page],
     () =>
       getHeadlines({
@@ -51,18 +51,8 @@ export default function Home() {
     }
   );
 
-  // cleaning up the news api response.
   const articles = useMemo(() => {
-    return data?.articles.filter((el) => {
-      const filterConditions = [
-        el.title === "[Removed]",
-        el.content === "[Removed]",
-        el.description === "[Removed]",
-        el.urlToImage?.includes("www.si.com"),
-      ];
-
-      return !filterConditions.includes(true);
-    });
+    return sanitiseResponse(data?.articles);
   }, [data]);
 
   return (
