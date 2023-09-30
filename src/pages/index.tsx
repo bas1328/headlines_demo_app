@@ -1,10 +1,20 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
+import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
+import { AVAILIBLE_COUNTRIES, PAGE_SIZE } from "@/common/constants";
+import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const { data } = useQuery(["headlines"], () =>
+    getHeadlines({
+      country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+      pageSize: PAGE_SIZE,
+    })
+  );
+
   return (
     <>
       <Head>
@@ -13,7 +23,28 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`${styles.main} ${inter.className}`}></main>
+      <main className={`${styles.main} ${inter.className}`}>
+        {data?.map((post: any) => (
+          <div key={post.id}>
+            <h1>{post.title}</h1>
+            <p>{post.body}</p>
+          </div>
+        ))}
+      </main>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(["posts"], () =>
+    getHeadlines({ country: AVAILIBLE_COUNTRIES.UNITED_STATES, pageSize: 15 })
+  );
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 }
