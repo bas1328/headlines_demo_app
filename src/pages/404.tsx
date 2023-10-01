@@ -1,3 +1,5 @@
+import styles from "@/styles/Home.module.scss";
+
 export default function NotFound(): JSX.Element {
-  return <div>no content found</div>;
+  return <div className={styles.container}>no content found</div>;
 }

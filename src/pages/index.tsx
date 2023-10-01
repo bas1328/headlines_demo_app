@@ -1,8 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 import { Inter } from "next/font/google";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
 
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
@@ -19,6 +18,7 @@ import styles from "@/styles/Home.module.scss";
 import { useSeo } from "@/hooks/useSeo";
 import HeadlinesSeo from "@/seo/HeadlinesSeo";
 import Articles from "@/components/Articles/Articles";
+import { CountryContext } from "@/contexts/CountryContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,11 +33,13 @@ export default function Home() {
     handleNext,
   } = usePagination();
 
+  const { selectedCountry } = useContext(CountryContext);
+
   const { data, isLoading } = useQuery<GetHeadlinesResponseType>(
     ["all_headlines", page],
     () =>
       getHeadlines({
-        country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+        country: selectedCountry,
         pageSize: PAGE_SIZE,
         page,
       }),

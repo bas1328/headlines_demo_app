@@ -1,9 +1,8 @@
 import { Inter } from "next/font/google";
 import { GetStaticPropsContext } from "next";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
 
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 
@@ -18,7 +17,8 @@ import { sanitiseResponse } from "@/utils/sanitiseResponse";
 import { AVAILIBLE_COUNTRIES, CATEGORIES, PAGE_SIZE } from "@/common/constants";
 import { CategoriesUnion, GetHeadlinesResponseType } from "@/types/common";
 
-import styles from "./Category.module.scss";
+import styles from "./Categories.module.scss";
+import { CountryContext } from "@/contexts/CountryContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,7 +39,7 @@ export default function Home() {
     handlePrev,
   } = usePagination();
 
-  const { t } = useTranslation("common");
+  const { selectedCountry } = useContext(CountryContext);
 
   const { data } = useQuery<GetHeadlinesResponseType>(
     ["headlines_by_category", page],
@@ -49,7 +49,7 @@ export default function Home() {
         category: slug as CategoriesUnion,
         pageSize: PAGE_SIZE,
         page,
-        country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+        country: selectedCountry,
       }),
     {
       onSuccess: (data) => {

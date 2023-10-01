@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 
+import styles from "./LocalSwitcher.module.scss";
+
 export default function LocaleSwitcher() {
   const router = useRouter();
   const { locales, locale: activeLocale } = router;
@@ -14,13 +16,13 @@ export default function LocaleSwitcher() {
   };
 
   return (
-    <div>
-      <div> {activeLocale}</div>
+    <div className={styles.container}>
+      <div className={styles.active}> {activeLocale} </div>
       <ul>
         {otherLocales.map((locale) => {
           const { pathname, query, asPath } = router;
           return (
-            <li key={locale}>
+            <div key={locale}>
               <Link
                 href={{ pathname, query }}
                 as={asPath}
@@ -29,7 +31,7 @@ export default function LocaleSwitcher() {
               >
                 {locale}
               </Link>
-            </li>
+            </div>
           );
         })}
       </ul>
