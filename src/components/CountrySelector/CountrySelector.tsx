@@ -3,6 +3,8 @@ import { AVAILIBLE_COUNTRIES } from "@/common/constants";
 import { CountryContext } from "@/contexts/CountryContext";
 import { CountryCodesUnion } from "@/types/common";
 
+import styles from "./CountrySelector.module.scss";
+
 export const CountrySelector = () => {
   const { selectedCountry, setSelectedCountry } = useContext(CountryContext);
 
@@ -11,15 +13,19 @@ export const CountrySelector = () => {
     setSelectedCountry(e.target.value as CountryCodesUnion);
   };
   return (
-    <div>
-      <select value={selectedCountry} onChange={handleCountryChange}>
-        {Object.entries(AVAILIBLE_COUNTRIES).map(([country, code]) => (
-          <option key={code} value={code}>
-            {country}
-          </option>
-        ))}
-      </select>
+      <div className={styles.wrapper}>
+        <select
+          className={styles.select}
+          value={selectedCountry}
+          onChange={handleCountryChange}
+        >
+          {Object.entries(AVAILIBLE_COUNTRIES).map(([country, code]) => (
+            <option className={styles.option} key={code} value={code}>
+              {country}
+            </option>
+          ))}
+        </select>
       <p>Selected country: {selectedCountry}</p>
-    </div>
+      </div>
   );
 };

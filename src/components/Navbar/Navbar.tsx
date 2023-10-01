@@ -15,18 +15,21 @@ export default function Navbar() {
   const { locale } = router;
   const { t } = useTranslation("common");
 
+  //TODO: add burger menu for mobile
   return (
     <nav className={`${styles.container} ${inter.className}`}>
       <Link href="/" locale={locale}>
         home
       </Link>
       <CountrySelector />
+      {/* FIXME: there is currently an open issue with navigating to the same route with not default locale. (Invariant: attempted to hard navigate to the same URL)
+      https://github.com/vercel/next.js/issues/44919 */}
       {CATEGORIES.map((category, i) => {
         return (
           <Link
             key={i}
             href={{
-              pathname: "/category/[category]",
+              pathname: "/categories/[category]",
               query: { category },
             }}
             locale={locale}

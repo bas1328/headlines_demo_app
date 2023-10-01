@@ -7,6 +7,10 @@ declare global {
        * API KEY
        */
       NEXT_PUBLIC_NEWS_API_TOKEN: string;
+      /**
+       * base app url
+       */
+      NEXT_PUBLIC_BASE_URL: string
     }
   }
 }

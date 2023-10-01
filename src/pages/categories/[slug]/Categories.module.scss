@@ -8,8 +8,9 @@
   grid-template-rows: repeat(4, 20%);
   grid-column-gap: 2rem;
   grid-row-gap: 2rem;
+  padding: 2rem;
   min-height: 100vh;
-  padding: 3rem;
+   margin-bottom: 5rem;
 
   & > * {
     background-color: #313131a1;

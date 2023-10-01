@@ -122,8 +122,8 @@ export async function getServerSideProps({
     props: {
       locale,
       locales,
-      dehydratedState: dehydrate(queryClient),
       ...(await serverSideTranslations(locale || "en", ["common"])),
+      dehydratedState: dehydrate(queryClient),
     },
   };
 }

@@ -1,0 +1,23 @@
+.wrapper {
+  border: 1px solid #fff;
+  border-radius: 0.25em;
+  padding: 0.25em 0.5em;
+  line-height: 1.1;
+  background-color: #ffffff1c;
+}
+
+.select {
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.257);
+  outline: none;
+  border-radius: 0.25em;
+  padding: 0.2rem;
+  border: 1px solid #fff;
+}
+

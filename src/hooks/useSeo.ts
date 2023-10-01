@@ -1,8 +1,8 @@
 import { Article } from "@/types/common";
 import { getWordsWithCapitalLetter } from "@/utils/getWordsWithCapitalLetter";
+import { useTranslation } from "next-i18next";
 import { OpenGraph } from "next-seo/lib/types";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 
 type UseSeoArgs = {
   slug?: string;
