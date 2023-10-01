@@ -5,14 +5,14 @@ import styles from "./Navbar.module.scss";
 import LocaleSwitcher from "../LocaleSwitcher/LocalSwitcher";
 import { useRouter } from "next/router";
 import { CATEGORIES } from "@/common/constants";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 const inter = Fira_Code({ subsets: ["latin"] });
 
 export default function Navbar() {
   const router = useRouter();
   const { locale } = router;
-  const { t } = useTranslation(locale);
+  const { t } = useTranslation('common');
 
   return (
     <nav className={`${styles.container} ${inter.className}`}>
