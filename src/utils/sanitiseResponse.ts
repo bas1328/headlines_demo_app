@@ -10,6 +10,8 @@ export const sanitiseResponse = (data: Article[] | undefined) => {
       el.content === "[Removed]",
       el.description === "[Removed]",
       el.urlToImage?.includes("www.si.com"),
+      el.urlToImage?.includes("cctvpic.com"),
+      el.urlToImage?.includes("thestreet.com"),
     ];
 
     return !filterConditions.includes(true);

@@ -1,5 +1,4 @@
 import { GetServerSidePropsContext } from "next";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useMemo } from "react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -9,7 +8,7 @@ import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { getHeadlines } from "@/fetchers/getHeadlines/getHeadlines";
 
 import { usePagination } from "@/hooks/usePagination";
-import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
+import PaginationButtons from "@/components/PaginationButtons/PaginationButtons";
 
 import { sanitiseResponse } from "@/utils/sanitiseResponse";
 
@@ -19,6 +18,7 @@ import { GetHeadlinesResponseType } from "@/types/common";
 import styles from "@/styles/Home.module.scss";
 import { useSeo } from "@/hooks/useSeo";
 import HeadlinesSeo from "@/seo/HeadlinesSeo";
+import Articles from "@/components/Articles/Articles";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,9 +33,7 @@ export default function Home() {
     handleNext,
   } = usePagination();
 
-  const { t } = useTranslation("common");
-
-  const { data } = useQuery<GetHeadlinesResponseType>(
+  const { data, isLoading } = useQuery<GetHeadlinesResponseType>(
     ["all_headlines", page],
     () =>
       getHeadlines({
@@ -63,30 +61,20 @@ export default function Home() {
     <>
       <HeadlinesSeo seoInfo={seoInfo} />
       <main className={`${styles.main} ${inter.className}`}>
-        {articles?.map((article) => (
-          <div key={article.source?.id || article?.publishedAt || article?.url}>
-            <h1>{article?.title}</h1>
-            <p>{article?.description}</p>
-            {article?.urlToImage && (
-              <div className={styles.imageContainer}>
-                <Image
-                  src={article?.urlToImage}
-                  alt={article?.title || article.description || "Article"}
-                  fill
-                  priority={false}
-                  loading="lazy"
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-            )}
-          </div>
-        ))}
-        <PaginationButton disabled={!hasPrev} onClick={handlePrev}>
-          {t("prev")}
-        </PaginationButton>
-        <PaginationButton disabled={!hasNext} onClick={handleNext}>
-          {t("next")}
-        </PaginationButton>
+        {articles?.length && !isLoading ? (
+          <>
+            <div className={styles.container}>
+              <Articles articles={articles} />
+            </div>
+            <PaginationButtons
+              hasNext={hasNext}
+              hasPrev={hasPrev}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
+            />
+          </>
+        ) : // TODO: add skeleton loader; move buttons out of this container. Currently they are inside to avoid layout shift
+        null}
       </main>
     </>
   );
@@ -98,11 +86,13 @@ export async function getServerSideProps({
 }: GetServerSidePropsContext) {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["all_headlines"], () =>
-    getHeadlines({
-      country: AVAILIBLE_COUNTRIES.UNITED_STATES,
-      pageSize: PAGE_SIZE,
-    })
+  await queryClient.prefetchQuery(
+    ["all_headlines", AVAILIBLE_COUNTRIES.UNITED_STATES],
+    () =>
+      getHeadlines({
+        country: AVAILIBLE_COUNTRIES.UNITED_STATES,
+        pageSize: PAGE_SIZE,
+      })
   );
 
   return {

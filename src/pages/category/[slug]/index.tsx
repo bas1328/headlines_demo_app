@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import { GetStaticPropsContext } from "next";
 import { useRouter } from "next/router";
@@ -9,7 +8,8 @@ import { useTranslation } from "next-i18next";
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 
 import HeadlinesSeo from "@/seo/HeadlinesSeo";
-import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
+import Articles from "@/components/Articles/Articles";
+import PaginationButtons from "@/components/PaginationButtons/PaginationButtons";
 import { usePagination } from "@/hooks/usePagination";
 import { useSeo } from "@/hooks/useSeo";
 
@@ -72,30 +72,19 @@ export default function Home() {
     <>
       <HeadlinesSeo seoInfo={seoInfo} />
       <main className={`${styles.main} ${inter.className}`}>
-        {articles?.map((article) => (
-          <div key={article.source?.id || article?.publishedAt || article?.url}>
-            <h1>{article?.title}</h1>
-            <p>{article?.description}</p>
-            {article?.urlToImage && (
-              <div className={styles.imageContainer}>
-                <Image
-                  src={article?.urlToImage}
-                  alt={article?.title || "Article Image"}
-                  fill
-                  priority={false}
-                  loading="lazy"
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-            )}
-          </div>
-        ))}
-        <PaginationButton disabled={!hasPrev} onClick={handlePrev}>
-          {t("prev")}
-        </PaginationButton>
-        <PaginationButton disabled={!hasNext} onClick={handleNext}>
-          {t("next")}
-        </PaginationButton>
+        {articles?.length ? (
+          <>
+            <div className={styles.container}>
+              <Articles articles={articles} />
+            </div>
+            <PaginationButtons
+              hasNext={hasNext}
+              hasPrev={hasPrev}
+              handleNext={handleNext}
+              handlePrev={handlePrev}
+            />
+          </>
+        ) : null}
       </main>
     </>
   );

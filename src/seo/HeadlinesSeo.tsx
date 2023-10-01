@@ -3,7 +3,7 @@ import { OpenGraph, Twitter } from "next-seo/lib/types";
 import { Robots } from "next/dist/lib/metadata/types/metadata-types";
 import { FC, memo, useMemo } from "react";
 
-interface IProps {
+type TProps = {
   seoInfo: {
     title?: string;
     seoTitle?: string;
@@ -16,7 +16,7 @@ interface IProps {
   };
 }
 
-const HeadlinesSeo: FC<IProps> = ({ seoInfo }: IProps) => {
+const HeadlinesSeo: FC<TProps> = ({ seoInfo }: TProps) => {
   const additionalMetaTags = useMemo(
     () =>
       seoInfo?.seoKeywords

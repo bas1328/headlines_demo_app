@@ -4,5 +4,7 @@ import styles from "./Footer.module.scss";
 const inter = Fira_Code({ subsets: ["latin"] });
 
 export default function Footer() {
-  return <footer className={inter.className}>footer</footer>;
+  return (
+    <footer className={`${styles.container} ${inter.className}`}>footer</footer>
+  );
 }

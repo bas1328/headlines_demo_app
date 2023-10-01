@@ -1,0 +1,24 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100%;
+  min-height: 100%;
+  button {
+    background-color: hsl(226, 70%, 55%);
+    margin: 0.5rem;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    cursor: pointer;
+    margin: 1rem;
+    &:hover {
+      background-color: hsl(226, 70%, 66%);
+    }
+    &:disabled {
+      background-color: hsl(226, 20%, 56%);
+      cursor: not-allowed;
+    }
+  }
+}
