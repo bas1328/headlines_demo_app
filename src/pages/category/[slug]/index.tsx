@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import { GetStaticPropsContext } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 
 import PaginationButton from "@/components/UI/PaginationButton/PaginationButton";
@@ -19,7 +21,7 @@ import styles from "./Category.module.scss";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const { categoryName } = useRouter().query;
+  const { slug } = useRouter().query;
 
   const {
     page,
@@ -36,7 +38,7 @@ export default function Home() {
     () =>
       getHeadlines({
         // safe type casting because we reroute to 404 if category is not in CATEGORIES
-        category: categoryName as CategoriesUnion,
+        category: slug as CategoriesUnion,
         pageSize: PAGE_SIZE,
         page,
         country: AVAILIBLE_COUNTRIES.UNITED_STATES,
@@ -90,12 +92,16 @@ export default function Home() {
   );
 }
 
-export async function getServerSideProps({ params }: GetStaticPropsContext) {
+export async function getServerSideProps({
+  params,
+  locale,
+  locales,
+}: GetStaticPropsContext) {
   const queryClient = new QueryClient();
 
-  const category = params?.categoryName;
+  const category = params?.slug;
 
-  // workaround for typescript's issue with Array.includes
+  // type casting is a workaround for typescript's issue with Array.includes
   if (!CATEGORIES.includes(category as CategoriesUnion)) {
     return {
       redirect: {
@@ -116,7 +122,10 @@ export async function getServerSideProps({ params }: GetStaticPropsContext) {
 
   return {
     props: {
+      locale,
+      locales,
       dehydratedState: dehydrate(queryClient),
+      ...(await serverSideTranslations(locale || "en", ["common"])),
     },
   };
 }

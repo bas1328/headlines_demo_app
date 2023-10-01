@@ -11,10 +11,13 @@
   "dependencies": {
     "@tanstack/react-query": "^4.35.3",
     "@tanstack/react-query-devtools": "^4.35.3",
+    "i18next": "^23.5.1",
     "next": "latest",
+    "next-i18next": "^14.0.3",
     "next-seo": "^6.1.0",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-i18next": "^13.2.2"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.34.1",
