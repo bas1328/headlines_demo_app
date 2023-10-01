@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from "next";
 import { Inter } from "next/font/google";
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
@@ -35,7 +35,7 @@ export default function Home() {
 
   const { selectedCountry } = useContext(CountryContext);
 
-  const { data, isLoading } = useQuery<GetHeadlinesResponseType>(
+  const { data, isLoading, refetch } = useQuery<GetHeadlinesResponseType>(
     ["all_headlines", page],
     () =>
       getHeadlines({
@@ -58,6 +58,10 @@ export default function Home() {
   }, [data]);
 
   const { seoInfo } = useSeo({ articles });
+
+  useEffect(() => {
+    refetch();
+  }, [selectedCountry, refetch]);
 
   return (
     <>

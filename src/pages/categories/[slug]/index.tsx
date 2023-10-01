@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import { GetStaticPropsContext } from "next";
 import { useRouter } from "next/router";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useEffect } from "react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
@@ -41,7 +41,7 @@ export default function Home() {
 
   const { selectedCountry } = useContext(CountryContext);
 
-  const { data } = useQuery<GetHeadlinesResponseType>(
+  const { data, refetch } = useQuery<GetHeadlinesResponseType>(
     ["headlines_by_category", page],
     () =>
       getHeadlines({
@@ -68,6 +68,9 @@ export default function Home() {
   // save type casting
   const { seoInfo } = useSeo({ articles, slug: slug as string });
 
+  useEffect(() => {
+    refetch();
+  }, [selectedCountry, refetch]);
   return (
     <>
       <HeadlinesSeo seoInfo={seoInfo} />
