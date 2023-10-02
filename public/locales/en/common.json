@@ -9,5 +9,6 @@
   "technology": "technology",
   "description": "Stay informed with our comprehensive news hub. Explore the latest headlines in business, entertainment, general news, health, science, sports, and technology—all in one place. Your source for up-to-date information on the topics that matter most.",
   "next": "Next",
-  "prev": "Prev"
+  "prev": "Prev",
+  "selectedCountry": "Selected Country"
 }

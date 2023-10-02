@@ -13,5 +13,7 @@ pnpm dev
 bun dev
 ```
 
+remove "example" from .env.example.local, follow the instruction from the file
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
