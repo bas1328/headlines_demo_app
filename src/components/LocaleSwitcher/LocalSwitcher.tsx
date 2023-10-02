@@ -22,7 +22,7 @@ export default function LocaleSwitcher() {
         {otherLocales.map((locale) => {
           const { pathname, query, asPath } = router;
           return (
-            <div key={locale}>
+            <li key={locale} className={styles.list}>
               <Link
                 href={{ pathname, query }}
                 as={asPath}
@@ -31,7 +31,7 @@ export default function LocaleSwitcher() {
               >
                 {locale}
               </Link>
-            </div>
+            </li>
           );
         })}
       </ul>

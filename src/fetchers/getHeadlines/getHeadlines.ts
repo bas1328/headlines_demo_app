@@ -21,23 +21,15 @@ type GetPostsArgs =
       page?: number;
     };
 
-export const getHeadlines = async ({
-  country,
-  pageSize = PAGE_SIZE,
-  category,
-  q,
-  page,
-  sources,
-}: GetPostsArgs) => {
+export const getHeadlines = async (props: GetPostsArgs) => {
   const url = new URL(TOP_HEADLINES_URL);
 
-  if (country) url.searchParams.append("country", country);
-  if (pageSize) url.searchParams.append("pageSize", pageSize.toString());
-  if (category) url.searchParams.append("category", category);
-  if (q) url.searchParams.append("q", q);
-  if (page) url.searchParams.append("page", page.toString());
-  if (sources) url.searchParams.append("sources", sources);
-
+  Object.entries(props).forEach(([key, value]) => {
+    if (value) {
+      url.searchParams.append(key, value.toString());
+    }
+  });
+  
   try {
     const posts = await fetch(url, {
       headers: {
@@ -47,7 +39,6 @@ export const getHeadlines = async ({
     const response = await posts.json();
 
     return response;
-    
   } catch (error) {
     // TODO: show error message to user
     console.error(error);

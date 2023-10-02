@@ -18,7 +18,9 @@ export const CountrySelector = () => {
   };
   return (
     <div className={styles.wrapper}>
+      <label htmlFor="country">{t("selectCountry")}</label>
       <select
+        id="country"
         className={styles.select}
         value={selectedCountry}
         onChange={handleCountryChange}

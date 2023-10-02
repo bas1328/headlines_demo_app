@@ -10,5 +10,6 @@
   "description": "Mantente informado con nuestro completo centro de noticias. Explora las últimas noticias en negocios, entretenimiento, noticias generales, salud, ciencia, deportes y tecnología, ¡todo en un solo lugar! Tu fuente de información actualizada sobre los temas que más importan.",
   "next": "Siguiente",
   "prev": "Anterior",
-  "selectedCountry": "País seleccionado"
+  "selectedCountry": "País seleccionado",
+  "selectCountry": "Seleccionar país"
 }
